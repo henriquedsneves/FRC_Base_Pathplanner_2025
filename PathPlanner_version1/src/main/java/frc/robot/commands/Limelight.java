@@ -6,8 +6,10 @@ import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 
 import frc.robot.subsystems.SwerveSubsystem;
-
+import swervelib.SwerveDrive;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 /** An example command that uses an example subsystem. */
 public class Limelight extends Command {
@@ -18,7 +20,8 @@ public class Limelight extends Command {
   double turn;
   double velocidade;
   boolean definirModos;
-  boolean Limelight10 = false;
+  boolean Limelight10 = true;
+  boolean ligado;
 
   
   /**
@@ -38,6 +41,7 @@ public Limelight(LimelightSubsystem limeLight, SwerveSubsystem swerve) {
   @Override
   public void initialize()
    {
+    ligado = false;
 
     drive = 0;
     turn = 0;
@@ -47,9 +51,12 @@ public Limelight(LimelightSubsystem limeLight, SwerveSubsystem swerve) {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    SwerveDrive swerveDrive = swerve.swerveDrive;
    
-     if(LimeLight.hasTarget()  ==  true  ){
+      if(LimeLight.hasTarget()  ==  true  ){
       System.out.println("Deu Certo!!!!!!!!!!!!!!!!!!!!!!");
+      swerveDrive.drive( new Translation2d(0.0, 0.0), 0.0,true, false );
+      ligado = true;
     }else{
      System.out.println("Deu erradoooooooooooooooo");
     }
@@ -67,7 +74,7 @@ public Limelight(LimelightSubsystem limeLight, SwerveSubsystem swerve) {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return ligado;
   }
   /*public void stopLime(){{
     System.out.println();

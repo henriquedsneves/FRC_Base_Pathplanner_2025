@@ -32,7 +32,7 @@ import swervelib.parser.SwerveParser;
  */
 public class SwerveSubsystem extends SubsystemBase {
     // Objeto global da SwerveDrive (Classe YAGSL)
-    SwerveDrive swerveDrive;
+    public SwerveDrive swerveDrive;
 
     // Método construtor da classe
     public SwerveSubsystem(File directory) {
