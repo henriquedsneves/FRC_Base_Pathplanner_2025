@@ -18,9 +18,9 @@ public final class Constants {
         // Tempo de loop (sparkMax + normal = 130ms)
         public static final double LOOP_TIME = 0.13;
         // Massa do robô em quilogramas.
-        public static final double ROBOT_MASS = 12;
+        public static final double ROBOT_MASS = 31;
         // Velocidade máxima do robô em metros por segundo.
-        public static final double MAX_SPEED = 4;
+        public static final double MAX_SPEED = 5;
 
         // Posições do centro de massa em metros.
         private static final double xMass = 13;
@@ -34,11 +34,11 @@ public final class Constants {
     // Classe que contém as configurações de PID para o modo autônomo.
     public static final class PID {
         // PID para frente e para trás.
-        public static final PIDFConfig xAutoPID = new PIDFConfig(0.8, 0, 0.05);
+        public static final PIDFConfig xAutoPID = new PIDFConfig(10.0, 0, 5);
         // PID para esquerda e direita.
-        public static final PIDFConfig yAutoPID = new PIDFConfig(0.6, 0, 0.03);
+        public static final PIDFConfig yAutoPID = new PIDFConfig(20, 0, 8.4);
         // PID de rotação.
-        public static final PIDFConfig angleAutoPID = new PIDFConfig(0.7, 0, 0.04);
+        public static final PIDFConfig angleAutoPID = new PIDFConfig(8, 0, 5);
     }
 
     // Classe que define as configurações do controle (joystick).
@@ -69,10 +69,10 @@ public final class Constants {
         public static final double TURN_CONSTANT = 1.0;
 
         // Velocidade máxima do robô em metros por segundo.
-        public static final double MAX_SPEED = 4.4;
+        public static final double MAX_SPEED = 5;
 
         // Intervalo de tempo (em segundos) para atualização do controle.
-        public static final double dt = 0.01;
+        public static final double dt = 10.8;
 
         // Constante para rotação contínua.
         public static final double constantRotation = 4;
@@ -83,14 +83,14 @@ public final class Constants {
         // Define se a aliança é azul (false) ou vermelha (true).
         public static final boolean ALIANCA = false;
         // Nome da primeira trajetória.
-        public static final String NOME_TRAJETORIA = "Auto6";
+        public static final String NOME_TRAJETORIA = "AutoBack";
         // Nome da segunda trajetória.
-        public static final String NOME_TRAJETORIA2 = "Path6";
-        public static final String NOME_TRAJETORIA3 = "Auto2";
+        public static final String NOME_TRAJETORIA2 = "PID";
+        public static final String NOME_TRAJETORIA3 = "AutoConesTeste";
     }
     public static final double DriveConversionFactor = SwerveMath.calculateMetersPerRotation(Units.inchesToMeters(4),
-      6.12, 1);
-  public static final double SteeringConversionFactor = SwerveMath.calculateDegreesPerSteeringRotation(12.8, 1);
+       6.75, 1);
+  public static final double SteeringConversionFactor = SwerveMath.calculateDegreesPerSteeringRotation(21.4285714286, 1);
   public static final  PIDConstants TranslationPID = new PIDConstants(6, 0, 0);
   public static final PIDConstants angleAutoPID = new PIDConstants(5.5, 0, 0);
 }

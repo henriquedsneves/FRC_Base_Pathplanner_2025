@@ -5,6 +5,16 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import swervelib.SwerveDrive;
 
+import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
+
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.CvSink;
+import edu.wpi.first.cscore.CvSource;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.wpilibj.TimedRobot;
+
+
 /**
  * A classe `Robot` é configurada automaticamente para rodar esta classe, e chamar as funções correspondentes a cada modo, conforme descrito na documentação do `TimedRobot`.
  * Se você mudar o nome desta classe ou do pacote após a criação deste projeto, você deve atualizar o arquivo `build.gradle` no projeto.
@@ -12,7 +22,7 @@ import swervelib.SwerveDrive;
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand; // Declaração do comando autônomo
   SwerveDrive swerveDrive;
-
+  private Thread visionThread;
   private RobotContainer m_robotContainer; // Declaração do container do robô
 
   /**
@@ -20,6 +30,36 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+  // Inicia a captura da câmera USB
+        UsbCamera camera = CameraServer.startAutomaticCapture();
+        camera.setResolution(1280, 720);
+        camera.setFPS(30);
+
+        // Inicia um thread para processar os frames da câmera
+        visionThread = new Thread(() -> {
+            // Criando objetos para capturar e transmitir frames
+            CvSink cvSink = CameraServer.getVideo();
+            CvSource outputStream = CameraServer.putVideo("Processed Video", 1280, 720);
+
+            Mat mat = new Mat(); // Frame capturado
+            while (!Thread.interrupted()) {
+                // Obtém o frame mais recente da câmera
+                if (cvSink.grabFrame(mat) == 0) {
+                    // Em caso de erro, pula o frame
+                    System.out.println("Erro ao capturar o frame: " + cvSink.getError());
+                    continue;
+                }
+
+                // Processamento de imagem: Exemplo de conversão para escala de cinza
+                Imgproc.cvtColor(mat, mat, Imgproc.COLOR_BGR2GRAY);
+
+                // Envia o frame processado para o stream
+                outputStream.putFrame(mat);
+            }
+        });
+
+        visionThread.setDaemon(true);
+        visionThread.start();// Configura o foco como automático
     // Instancia o `RobotContainer`. Isso realizará todas as ligações de botões e colocará o chooser autônomo no dashboard.
     m_robotContainer = new RobotContainer();
   }
@@ -37,7 +77,10 @@ public class Robot extends TimedRobot {
 
   /** Esta função é chamada uma vez cada vez que o robô entra no modo Desativado. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+     // Finaliza o thread quando o robô for desabilitado
+     visionThread.interrupt();
+  }
 
   @Override
   public void disabledPeriodic() {}

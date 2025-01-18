@@ -1,0 +1,122 @@
+{
+  "version": 1.0,
+  "startingPose": null,
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ConeTeste"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ConeTeste2"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "PathPlannerSequence"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ConeTeste3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ConeTeste4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Limelight"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "L2"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ConeTeste5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ConeTeste6"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Limelight"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "L3"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ConeTeste7"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ConeTeste8"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ConeTeste9"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ConeTeste10"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

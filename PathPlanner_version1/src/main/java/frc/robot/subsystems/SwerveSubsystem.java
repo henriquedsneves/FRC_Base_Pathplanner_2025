@@ -9,7 +9,9 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
-    
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -22,6 +24,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.Tracao;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
+import swervelib.SwerveDriveTest;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 import swervelib.parser.SwerveDriveConfiguration;
@@ -31,9 +34,18 @@ import swervelib.parser.SwerveParser;
  * Classe de subsistema onde fazemos a ponte do nosso código para YAGSL
  */
 public class SwerveSubsystem extends SubsystemBase {
+
+    double velocidadeAlinhamento = 0.12;
+  
+  SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(0.01, 0, 0) ;
+  PIDController rotationPID = new PIDController(0.01, 0.00, 0.00);
+  double velocidade = 0.2;
+  double output;
+ 
+
     // Objeto global da SwerveDrive (Classe YAGSL)
     public SwerveDrive swerveDrive;
-
+    Constants constants;
     // Método construtor da classe
     public SwerveSubsystem(File directory) {
         // Seta a telemetria como nível mais alto
@@ -47,25 +59,38 @@ public class SwerveSubsystem extends SubsystemBase {
         }
         swerveDrive.setHeadingCorrection(true); // Ativa a correção de direção
         setupPathPlanner(); // Configura o Path Planner
+       // swerveDrive.setChassisDiscretization(true, Constants.Tracao.dt);
+       //swerveDrive = new SwerveParser(directory).createSwerveDrive(Tracao.MAX_SPEED);
+        swerveDrive.setAngularVelocityCompensation(true, true, 1.2);
+        SwerveDriveTest.centerModules(swerveDrive);
     }
     
     @Override
     public void periodic() {
-        //System.out.println(getHeading());
-       // System.out.println(getPose());
+       // System.out.println("Angulo do robo:" + getHeading());
+       //System.out.println(getPose());
         // Dentro da função periódica atualizamos nossa odometria
         swerveDrive.updateOdometry();
+        
+        
     }
+   
 
     public void setupPathPlanner() {
+         // Calcular o valor do feedforward para a velocidade máxima
+    double feedforwardValue = feedforward.calculate(Constants.Dimensoes.MAX_SPEED);
         AutoBuilder.configureHolonomic(
             this::getPose, // Fornecedor da pose do robô
             this::resetOdometry, // Método para resetar a odometria
             this::getRobotVelocity, // Fornecedor das velocidades do chassis, deve ser relativo ao robô
             this::setChassisSpeeds, // Método para definir as velocidades do chassis relativo ao robô
             new HolonomicPathFollowerConfig( // Configuração do HolonomicPathFollower
-                new PIDConstants(0.5, 0.0, 0.1), // Constantes PID para translação
-                new PIDConstants(0.8, 0, 0.5), // Constantes PID para rotação
+                new PIDConstants(feedforwardValue, 0.0, 0.0), // Constantes PID para translação
+                new PIDConstants(
+                    rotationPID.getP(),
+                    rotationPID.getI(),
+                    rotationPID.getD()
+                ), // Constantes PID para rotação
                 4.0, // Velocidade máxima do módulo em m/s
                 swerveDrive.swerveDriveConfiguration.getDriveBaseRadiusMeters(), // Raio da base de direção
                 new ReplanningConfig() // Configuração padrão de replanejamento do caminho
@@ -104,12 +129,13 @@ public class SwerveSubsystem extends SubsystemBase {
                                                 yInput * swerveDrive.getMaximumVelocity()),
                               angularRotationX.getAsDouble() * swerveDrive.getMaximumAngularVelocity(),
                               true,
-                              true);
+                              false);
         });
     }
 
     public void driveFieldOriented(ChassisSpeeds velocity) {
         swerveDrive.driveFieldOriented(velocity);
+        
     }
 
     // Função drive que chamamos em nossa classe de comando Teleoperado
@@ -171,8 +197,11 @@ public class SwerveSubsystem extends SubsystemBase {
     }
      public void stop() {
         System.out.println("Swerve Subsystem: Robô parado.");
+        swerveDrive.drive( new Translation2d(0.0, 0.0), 0.0,true, false );
         // Lógica para parar os motores do swerve
     }
+
+    
 
     
     public Command getAutonomousCommand(String pathName, boolean setOdomToStart) {
